@@ -1,10 +1,20 @@
 package com.nigeleke.reversi
 
-case class Move(row: Int, col: Int)
+import scala.language.implicitConversions
 
-//object Move {
-//
-//  implicit def liftImplicitTuple2[A, B, A1, B1](tuple: (A, B))(implicit f1: A => A1, f2: B => B1) : (A1, B1) =
-//    (f1(tuple._1), f2(tuple._2))
-//
-//}
+sealed trait Move
+case class Square(row: Int, column: Int) extends Move {
+  override lazy val toString = ((column + 'a').toChar + (row + 1).toString)
+
+}
+case object Pass extends Move
+
+object Square {
+
+  implicit def liftImplicitTuple2(tuple: (Int, Int)) = Square(tuple._1, tuple._2)
+
+  implicit class SquareOps(lhs: Square) {
+    def +(rhs: Square) = Square(lhs.row + rhs.row, lhs.column + rhs.column)
+  }
+
+}

@@ -7,37 +7,27 @@ object MiniMaxWithAlphaBetaPruning extends Strategy {
   val config = ConfigFactory.load()
   val maxDepth = config.getInt("com.nigeleke.reversi.strategy.MiniMaxWithAlphaBetaPruning.maxDepth")
 
-  override def getMove(game: Game): Move = lookahead(game, 0, MinInt, MaxInt).move
-
-  case class LookAheadResult(move: Move, value: Int)
-
-  private def lookahead(game: Game, depth: Int, alpha: Int, beta: Int): LookAheadResult = {
-    val moves = game.availableMoves
-
-    val result =
-      if (depth == maxDepth) moves.map(m => LookAheadResult(m, game.makeMove(m).valuation)).minBy(_.value)
-      else alphaBetaResult(game, depth, moves, alpha, beta)
-
-    LookAheadResult(result.move, -result.value)
+  override def getMove(game: Game): Move = {
+    val results = game.availableMoves.map(m => (m, lookahead(game.makeMove(m), 0, MinInt, MaxInt)))
+    val result = results.minBy(_._2)
+    result._1
   }
 
-  private def alphaBetaResult(game: Game, depth: Int, moves: Seq[Move], alpha: Int, beta: Int) : LookAheadResult = {
-    val (firstMove, rest) = (moves.head, moves.tail)
-    val firstLookahead = lookahead(game.makeMove(firstMove), depth + 1, -beta, -alpha)
+  private def lookahead(game: Game, depth: Int, alpha: Int, beta: Int) : Int =
+    if (depth == maxDepth || game.isFinished) game.valuation
+    else -prune(game, depth, alpha, beta)
 
-    val (bestMove, bestLookahead) =
-      rest.foldLeft((firstMove, firstLookahead)) {
-        case c @ ((goodM, goodLar), m) =>
-          if (goodLar.value <= alpha) (goodM, goodLar)
-          else {
-            val lar = lookahead(game.makeMove(m), depth + 1, -beta, -goodLar.value)
-            if (lar.value < goodLar.value) (m, lar)
-            else (goodM, goodLar)
-          }
-      }
-
-    LookAheadResult(bestMove, bestLookahead.value)
-  }
+  private def prune(game: Game, depth: Int, alpha: Int, beta: Int) : Int =
+    game.availableMoves.foldLeft((beta, MaxInt)) {
+      case ((currentBeta, bestValue), m) =>
+        if (currentBeta <= alpha) (currentBeta, bestValue)
+        else {
+          val nextMoveValue = lookahead(game.makeMove(m), depth + 1, -currentBeta, -alpha)
+          val newBestValue = Math.min(bestValue, nextMoveValue)
+          val newBeta = Math.min(beta, newBestValue)
+          (newBeta, newBestValue)
+        }
+    }._2
 
   private val MaxInt = Int.MaxValue
   private val MinInt = -MaxInt

@@ -131,7 +131,7 @@ class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
         blackGame.valuation should be(Int.MaxValue)
 
         val whiteGame = Reversi(board, White)
-        whiteGame.valuation should be(Int.MinValue)
+        whiteGame.valuation should be(-Int.MaxValue)
       }
     }
 

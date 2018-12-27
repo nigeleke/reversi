@@ -8,14 +8,14 @@ object App {
     val start = System.nanoTime()
 
     val game = Reversi()
-      .withStrategy(Black, MiniMax)
-      .withStrategy(White, ManualStrategy)
+      .withStrategy(Black, MiniMaxWithAlphaBetaPruning)
+      .withStrategy(White, MiniMaxWithAlphaBetaPruning)
 
     val endGame = play(game)
 
     val end = System.nanoTime()
 
-    println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} :: total ${end-start}ns")
+    println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} :: total ${(end-start)/1000000000.0}ns")
   }
 
   @tailrec

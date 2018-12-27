@@ -22,17 +22,14 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
 
   lazy val isFinished: Boolean = board.availableMoves(currentPlayer).isEmpty && board.availableMoves(opponent).isEmpty
 
-  lazy val valuation: Int = {
-    if (Reversi.trace) println(s"valuation:\n$this")
+  lazy val valuation: Int =
     if (isFinished) finishedGameValuation
     else unfinishedGameValuation
-
-  }
 
   private lazy val finishedGameValuation: Int = {
     val diff = board.counters(currentPlayer) - board.counters(opponent)
     if (diff > 0) Int.MaxValue
-    else if (diff < 0) Int.MinValue
+    else if (diff < 0) Int.MinValue +1
     else 0
   }
 
@@ -41,7 +38,7 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
 
   private lazy val unfinishedGameValuation: Int = (currentCounters, opponentCounters) match {
     case (0, 0) => 0
-    case (0, _) => Int.MinValue
+    case (0, _) => Int.MinValue +1
     case (_, 0) => Int.MaxValue
     case (cc, oc) if Reversi.startGame.contains(cc + oc) => maximizeMobility
     case (cc, oc) if Reversi.midGame.contains(cc + oc) => weighted
@@ -52,27 +49,16 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
   private lazy val maximizeMobility = {
     // Maximize number of moves available during start
     val moves = board.availableMoves(currentPlayer)
-    val v = moves.map(Reversi.weightOf).sum * moves.size
-    if (Reversi.trace) {
-      val movesString = board.availableMoves(currentPlayer).mkString(", ")
-      println(s"maximizeMobility $currentPlayer $v from $movesString on:\n${board.toPrettyString}")
-    }
-    v
+    moves.map(Reversi.weightOf).sum * moves.size
   }
 
-  private lazy val weighted = {
-    val v = currentSquares.map(Reversi.weightOf).sum - opponentSquares.map(Reversi.weightOf).sum
-    if (Reversi.trace) println(s"weighted $currentPlayer $v on:\n${board.toPrettyString}")
-    v
-  }
+  private lazy val weighted =
+    currentSquares.map(Reversi.weightOf).sum - opponentSquares.map(Reversi.weightOf).sum
 
   private lazy val maximizeCounters = {
     // End game simply counter counters. (if depth is range size this will be perfect game)
-    val v = currentCounters - opponentCounters
-    if (Reversi.trace) println(s"maximizeCounters $currentPlayer $currentCounters - $opponentCounters = $v on:\n${board.toPrettyString}")
-    v
+    currentCounters - opponentCounters
   }
-
 
 }
 
@@ -89,7 +75,7 @@ object Reversi {
   }
 
   private lazy val startGame = 0 until 10
-  private lazy val midGame = (startGame.last + 1) until 50
+  private lazy val midGame = (startGame.last + 1) until 55
   private lazy val endGame = (midGame.last + 1) until 64
 
   lazy val weights : Array[Array[Int]] = Array(
@@ -103,8 +89,4 @@ object Reversi {
     Array( 99,  -8,  8,  6,  6,  8,  -8, 99 ))
 
   def weightOf(s: Square) = weights(s.row)(s.column)
-
-  private lazy val config = ConfigFactory.load()
-  private lazy val trace = config.getBoolean("com.nigeleke.reversi.trace")
-
 }

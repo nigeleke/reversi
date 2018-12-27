@@ -8,7 +8,7 @@ object App {
     val start = System.nanoTime()
 
     val game = Reversi()
-      .withStrategy(Black, MiniMaxWithAlphaBetaPruning)
+      .withStrategy(Black, MiniMax)
       .withStrategy(White, ManualStrategy)
 
     val endGame = play(game)

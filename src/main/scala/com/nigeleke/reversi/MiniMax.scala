@@ -5,22 +5,16 @@ import com.typesafe.config.ConfigFactory
 object MiniMax extends Strategy {
 
   val config = ConfigFactory.load()
-  val trace = config.getBoolean("com.nigeleke.reversi.trace")
   val maxDepth = config.getInt("com.nigeleke.reversi.strategy.MiniMax.maxDepth")
 
-  override def getMove(game: Game): Move = lookahead(game, 0).move
-
-  case class LookAheadResult(move: Move, value: Int)
-
-  private def lookahead(game: Game, depth: Int) : LookAheadResult = {
-    val moves = game.availableMoves
-
-    val results =
-      if (depth == maxDepth) moves.map(m => LookAheadResult(m, game.makeMove(m).valuation))
-      else moves.map(m => LookAheadResult(m, lookahead(game.makeMove(m), depth+1).value))
-
-    val result = results.minBy(_.value)
-
-    LookAheadResult(result.move, -result.value)
+  override def getMove(game: Game): Move = {
+    val results = game.availableMoves.map(m => (m, lookahead(game.makeMove(m), 0)))
+    val result = results.minBy(_._2)
+    result._1
   }
+
+  private def lookahead(game: Game, depth: Int) : Int =
+    if (depth == maxDepth || game.isFinished) game.valuation
+    else -game.availableMoves.map(m => lookahead(game.makeMove(m), depth + 1)).min
+
 }

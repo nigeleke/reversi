@@ -5,7 +5,6 @@ import com.typesafe.config.ConfigFactory
 object MiniMaxWithAlphaBetaPruning extends Strategy {
 
   val config = ConfigFactory.load()
-  val trace = config.getBoolean("com.nigeleke.reversi.trace")
   val maxDepth = config.getInt("com.nigeleke.reversi.strategy.MiniMaxWithAlphaBetaPruning.maxDepth")
 
   override def getMove(game: Game): Move = lookahead(game, 0, MinInt, MaxInt).move

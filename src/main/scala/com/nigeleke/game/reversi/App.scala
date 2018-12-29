@@ -1,4 +1,4 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
 import scala.annotation.tailrec
 
@@ -8,14 +8,14 @@ object App {
     val start = System.nanoTime()
 
     val game = Reversi()
-      .withStrategy(Black, MiniMaxWithAlphaBetaPruning)
-      .withStrategy(White, MiniMaxWithAlphaBetaPruning)
+      .withStrategy(Black, miniMaxWithAlphaBetaPruning)
+      .withStrategy(White, miniMaxWithAlphaBetaPruning)
 
     val endGame = play(game)
 
     val end = System.nanoTime()
 
-    println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} :: total ${(end-start)/1000000000.0}ns")
+    println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} in ${(end-start)/1000000000}s")
   }
 
   @tailrec

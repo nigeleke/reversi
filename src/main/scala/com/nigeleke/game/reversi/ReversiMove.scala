@@ -1,13 +1,16 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
 import scala.language.implicitConversions
 
-sealed trait Move
-case class Square(row: Int, column: Int) extends Move {
-  override lazy val toString = ((column + 'a').toChar + (row + 1).toString)
+sealed trait ReversiMove
 
+case class Square(row: Int, column: Int) extends ReversiMove {
+  override lazy val toString = ((column + 'a').toChar + (row + 1).toString)
 }
-case object Pass extends Move
+
+case object Pass extends ReversiMove
+
+
 
 object Square {
 

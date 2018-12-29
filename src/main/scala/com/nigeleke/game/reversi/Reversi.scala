@@ -1,15 +1,18 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
-import com.typesafe.config.ConfigFactory
+import com.nigeleke.game.strategy.{GameLike, Strategy}
 
-case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, Strategy]) {
+case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, ReversiStrategy]) extends GameLike {
 
-  lazy val availableMoves: Seq[Move] = {
+  override type Game = Reversi
+  override type Move = ReversiMove
+
+  override lazy val availableMoves: Seq[Move] = {
     val boardMoves = board.availableMoves(currentPlayer)
     if (boardMoves.isEmpty) Seq(Pass) else boardMoves
   }
 
-  def makeMove(move: Move): Reversi = {
+  override def makeMove(move: Move): Game = {
     require(availableMoves.contains(move))
     val newBoard = move match {
       case Pass => board
@@ -20,9 +23,9 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
 
   lazy val opponent: Player = currentPlayer.opponent
 
-  lazy val isFinished: Boolean = board.availableMoves(currentPlayer).isEmpty && board.availableMoves(opponent).isEmpty
+  override lazy val isFinished: Boolean = board.availableMoves(currentPlayer).isEmpty && board.availableMoves(opponent).isEmpty
 
-  lazy val valuation: Int =
+  override lazy val valuation: Int =
     if (isFinished) finishedGameValuation
     else unfinishedGameValuation
 
@@ -38,7 +41,7 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
 
   private lazy val unfinishedGameValuation: Int = (currentCounters, opponentCounters) match {
     case (0, 0) => 0
-    case (0, _) => Int.MinValue +1
+    case (0, _) => -Int.MaxValue
     case (_, 0) => Int.MaxValue
     case (cc, oc) if Reversi.startGame.contains(cc + oc) => maximizeMobility
     case (cc, oc) if Reversi.midGame.contains(cc + oc) => weighted
@@ -64,11 +67,11 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, St
 
 object Reversi {
 
-  def apply(board: Board, player: Player) : Reversi = Reversi(board, player, Map(Black -> ManualStrategy, White -> ManualStrategy))
+  def apply(board: Board, player: Player) : Reversi = Reversi(board, player, Map(Black -> manualStrategy, White -> manualStrategy))
   def apply() : Reversi = Reversi(Board(), Black)
 
   implicit class GameOps(game: Reversi) {
-    def withStrategy(player: Player, strategy: Strategy) = {
+    def withStrategy(player: Player, strategy: ReversiStrategy) = {
       val newStrategy = game.strategy.updated(player, strategy)
       game.copy(strategy = newStrategy)
     }

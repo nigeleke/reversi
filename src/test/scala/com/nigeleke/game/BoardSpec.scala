@@ -1,5 +1,6 @@
-package com.nigeleke.reversi
+package com.nigeleke.game
 
+import com.nigeleke.game.reversi.{Black, Board, Square, White}
 import org.scalatest.{Matchers, WordSpec}
 
 class BoardSpec extends WordSpec with Matchers {

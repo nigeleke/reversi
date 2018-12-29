@@ -1,5 +1,7 @@
-package com.nigeleke.reversi
+package com.nigeleke.game
 
+import com.nigeleke.game.reversi._
+import com.nigeleke.game.strategy.{MiniMax, RandomMoveStrategy}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 
@@ -185,14 +187,14 @@ class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
 
     "should have default Manual strategies for both players" in {
       val game = Reversi()
-      game.strategy(Black) should be(ManualStrategy)
-      game.strategy(White) should be(ManualStrategy)
+      game.strategy(Black) should be(manualStrategy)
+      game.strategy(White) should be(manualStrategy)
     }
 
     "should be able to define strategies for both players" in {
-      val game = Reversi().withStrategy(Black, MiniMax).withStrategy(White, RandomMoveStrategy)
-      game.strategy(Black) should be(MiniMax)
-      game.strategy(White) should be(RandomMoveStrategy)
+      val game = Reversi().withStrategy(Black, miniMaxStrategy).withStrategy(White, randomMoveStrategy)
+      game.strategy(Black) should be(miniMaxStrategy)
+      game.strategy(White) should be(randomMoveStrategy)
     }
   }
 

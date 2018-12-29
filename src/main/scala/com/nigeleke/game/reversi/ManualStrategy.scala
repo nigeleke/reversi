@@ -1,6 +1,12 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
-object ManualStrategy extends Strategy {
+import com.nigeleke.game.strategy.Strategy
+
+trait ManualStrategy extends Strategy {
+
+  override type Game = Reversi
+  override type Move = ReversiMove
+
   override def getMove(game: Game): Move = {
     val validCommandMap = game.availableMoves.map {
       case p @ Pass => "pass" -> p
@@ -19,4 +25,5 @@ object ManualStrategy extends Strategy {
 
     validCommandMap(command)
   }
+
 }

@@ -1,4 +1,4 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
 import scala.language.implicitConversions
 

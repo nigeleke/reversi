@@ -1,10 +1,10 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.strategy
 
 // Acknowledgement:
-// This code is derived as a result of the work completed by Phillip Johnson.
+// This code is loosely derived from the work completed by Phillip Johnson.
 // https://github.com/phillipjohnson/dots-and-boxes/
 //
-object RandomMoveStrategy extends Strategy {
+trait RandomMoveStrategy extends Strategy {
 
   override def getMove(game: Game): Move = {
     val moves = game.availableMoves

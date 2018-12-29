@@ -1,4 +1,4 @@
-package com.nigeleke.reversi
+package com.nigeleke.game.reversi
 
 sealed trait Player
 case object Black extends Player

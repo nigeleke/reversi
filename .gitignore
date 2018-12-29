@@ -1,4 +1,5 @@
 .idea/
+project/build.properties
 target/
 *.class
 *.log

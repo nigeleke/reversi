@@ -19,10 +19,9 @@ before_script:
 test:
   script:
     - sbt clean coverage test coverageReport
-
-artifacts:
-  paths:
-    - target/test-reports/
+  artifacts:
+    paths:
+      - target/test-reports/
 
 pages:
   stage: deploy

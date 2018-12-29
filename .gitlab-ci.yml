@@ -1,0 +1,6 @@
+before_script:
+  # Pre-requisite: sbt must be installed
+  - sbt sbt-version
+test:
+  script:
+    - sbt clean coverage test coverageReport

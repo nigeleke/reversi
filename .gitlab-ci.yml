@@ -28,7 +28,8 @@ pages:
   dependencies:
     - test
   script:
-    - mv target/test-reports/ public/
+    - mkdir public
+    - mv target/scala-2.12/scoverage-report/* public
   artifacts:
     paths:
       - public

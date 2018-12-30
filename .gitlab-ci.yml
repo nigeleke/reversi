@@ -29,7 +29,7 @@ pages:
     - test
   script:
     - mkdir public
-    - mv target/scala-2.12/scoverage-report/* public
+    - mv target/scala-2.12/scoverage-report/ public
   artifacts:
     paths:
       - public

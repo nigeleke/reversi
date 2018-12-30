@@ -66,6 +66,21 @@ class BoardSpec extends WordSpec with Matchers {
       board.availableMoves(Black) should contain theSameElementsAs(Seq(Square(2,4), Square(3,5), Square(4,2), Square(5,3)))
     }
 
+    "should, if created from empty, only allow central squares for the moves" in {
+      val initial =
+        """. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .""".stripMargin
+      val board = Board.from(initial)
+
+      board.availableMoves(Black) should contain theSameElementsAs(Seq(Square(3,3), Square(3,4), Square(4,3), Square(4,4)))
+    }
+
     "should provide updated board after result" in {
       val initial =
         """. . . . . . . .

@@ -1,11 +1,21 @@
 package com.nigeleke.game.reversi
 
+import com.nigeleke.game.strategy.{MiniMax, MiniMaxWithAlphaBetaPruning, RandomMoveStrategy}
+import com.typesafe.config.ConfigFactory
+
 import scala.annotation.tailrec
 
 object App {
 
   def main(args: Array[String]) : Unit = {
+    val defaultConfig = ConfigFactory.load()
+
     val start = System.nanoTime()
+
+    lazy val randomMoveStrategy = new ReversiStrategy with RandomMoveStrategy {}
+    lazy val miniMaxStrategy = new ReversiStrategy with MiniMax { val config = defaultConfig }
+    lazy val miniMaxWithAlphaBetaPruning = new ReversiStrategy with MiniMaxWithAlphaBetaPruning { val config = defaultConfig }
+    lazy val manualStrategy = new ReversiStrategy with ManualStrategy {}
 
     val game = Reversi()
       .withStrategy(Black, miniMaxWithAlphaBetaPruning)

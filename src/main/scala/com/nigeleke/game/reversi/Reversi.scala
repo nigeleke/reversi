@@ -67,7 +67,7 @@ case class Reversi(board: Board, currentPlayer: Player, strategy: Map[Player, Re
 
 object Reversi {
 
-  def apply(board: Board, player: Player) : Reversi = Reversi(board, player, Map(Black -> manualStrategy, White -> manualStrategy))
+  def apply(board: Board, player: Player) : Reversi = Reversi(board, player, Map.empty)
   def apply() : Reversi = Reversi(Board(), Black)
 
   implicit class GameOps(game: Reversi) {

@@ -15,11 +15,11 @@ object App {
     lazy val randomMoveStrategy = new ReversiStrategy with RandomMoveStrategy {}
     lazy val miniMaxStrategy = new ReversiStrategy with MiniMax { val config = defaultConfig }
     lazy val miniMaxWithAlphaBetaPruning = new ReversiStrategy with MiniMaxWithAlphaBetaPruning { val config = defaultConfig }
-    lazy val manualStrategy = new ReversiStrategy with ManualStrategy {}
+    lazy val manualStrategy = ManualStrategy(System.in, System.out)
 
     val game = Reversi()
       .withStrategy(Black, miniMaxWithAlphaBetaPruning)
-      .withStrategy(White, miniMaxWithAlphaBetaPruning)
+      .withStrategy(White, manualStrategy)
 
     val endGame = play(game)
 

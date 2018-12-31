@@ -1,11 +1,13 @@
 package com.nigeleke.game.reversi
 
+import java.io._
+
 import com.nigeleke.game.strategy.Strategy
 
-trait ManualStrategy extends Strategy {
+case class ManualStrategy(in: InputStream, out: OutputStream) extends ReversiStrategy {
 
-  override type Game = Reversi
-  override type Move = ReversiMove
+  lazy val reader = new BufferedReader(new InputStreamReader(in))
+  lazy val writer = new PrintWriter(out)
 
   override def getMove(game: Game): Move = {
     val validCommandMap = game.availableMoves.map {
@@ -14,10 +16,10 @@ trait ManualStrategy extends Strategy {
     }.toMap
 
     val validCommandsString = validCommandMap.keys.toSeq.sorted.mkString(", ")
-    println(s"Allowed: $validCommandsString")
+    writer.println(s"Allowed: $validCommandsString")
 
     val command = Iterator
-      .continually(scala.io.StdIn.readLine("Move: "))
+      .continually({ writer.print("Move: "); writer.flush(); reader.readLine() })
       .dropWhile(c => !(validCommandMap.contains(c) || c.equals("quit")))
       .next()
 

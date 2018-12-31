@@ -82,7 +82,6 @@ class StrategySpec extends WordSpec with Matchers {
     }
 
     availableMoves.moves should contain (strategy.getMove(game))
-
   }
 
   trait TestMove

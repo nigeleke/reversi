@@ -1,15 +1,11 @@
 package com.nigeleke.game
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, PrintStream}
-import java.security.Permission
-
 import com.nigeleke.game.reversi._
 import com.nigeleke.game.strategy.{MiniMax, RandomMoveStrategy}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
 
-class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
+class ReversiSpec extends WordSpec with Matchers {
 
   "A Reversi Game" should {
 
@@ -221,36 +217,6 @@ class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
       game.strategy(White) should be(randomMoveStrategy)
     }
 
-    "should enable a ManualStrategy to display availableMoves to a user" in {
-      val inStream = new ByteArrayInputStream("a1\nc5\n".getBytes)
-      val outStream = new ByteArrayOutputStream()
-      val game = Reversi()
-      val strategy = ManualStrategy(inStream, outStream)
-      val move = strategy.getMove(game)
-
-      outStream.toString should be("Allowed: c5, d6, e3, f4\nMove: Move: ")
-      move.toString should be("c5")
-    }
-
-    "should enable a ManualStrategy which allows user to quit" in {
-      val prevSecurityManager = System.getSecurityManager()
-
-      System.setSecurityManager(new CheckExitSecurityManager())
-
-      val inStream = new ByteArrayInputStream("quit\n".getBytes)
-      val outStream = new ByteArrayOutputStream()
-      val game = Reversi()
-      val strategy = ManualStrategy(inStream, outStream)
-
-      val exception = intercept[ExitException] {
-        val move = strategy.getMove(game)
-      }
-
-      outStream.toString should be("Allowed: c5, d6, e3, f4\nMove: ")
-      exception.status should be(0)
-
-      System.setSecurityManager(prevSecurityManager)
-    }
   }
 
   private implicit class ReversiOps(game: Reversi) {
@@ -260,17 +226,4 @@ class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
     }
   }
 
-}
-
-sealed case class ExitException(status: Int) extends SecurityException("Expected System.exit(0) called") { }
-
-sealed class CheckExitSecurityManager extends SecurityManager {
-  override def checkPermission(perm: Permission): Unit = {}
-
-  override def checkPermission(perm: Permission, context: Object): Unit = {}
-
-  override def checkExit(status: Int): Unit = {
-    super.checkExit(status)
-    throw ExitException(status)
-  }
 }

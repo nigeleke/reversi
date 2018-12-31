@@ -157,4 +157,73 @@ class BoardSpec extends WordSpec with Matchers {
     board.availableMoves(White) should contain(Square(2,7))
   }
 
+  "should be comparable and equal" in {
+    val initial =
+      """. . . . . . . X
+        |. . . . . O O O
+        |. . . X O X . .
+        |. . . O X . . .
+        |. . O O O X . .
+        |. . . . . . . .
+        |. . . . . . . .
+        |. . . . . . . .""".stripMargin
+    val board1 = Board.from(initial)
+    val board2 = Board.from(initial)
+
+    board2 should be(board1)
+  }
+
+  "should be comparable and not equal" in {
+    val board1 = Board.from(
+      """. . . . . . . X
+        |. . . . . O O O
+        |. . . X O X . .
+        |. . . O X . . .
+        |. . O O O X . .
+        |. . . . . . . .
+        |. . . . . . . .
+        |. . . . . . . .""".stripMargin)
+    val board2 = Board.from(
+      """. . . . . X . X
+        |. . . . . O O O
+        |. . . X O X . .
+        |. . . O X . . .
+        |. . O O O X . .
+        |. . . . . . . .
+        |. . . . . . . .
+        |. . . . . . . .""".stripMargin)
+
+    board2 should not be(board1)
+  }
+
+  "should be comparable to other but not equal" in {
+    val initial =
+      """. . . . . . . X
+        |. . . . . O O O
+        |. . . X O X . .
+        |. . . O X . . .
+        |. . O O O X . .
+        |. . . . . . . .
+        |. . . . . . . .
+        |. . . . . . . .""".stripMargin
+    val board = Board.from(initial)
+
+    board should not be(initial)
+    initial should not be(board)
+  }
+
+  "should have hash value the same as its underlying data" in {
+    val board = Board.from(
+      """. . . . . . . X
+        |. . . . . O O O
+        |. . . X O X . .
+        |. . . O X . . .
+        |. . O O O X . .
+        |. . . . . . . .
+        |. . . . . . . .
+        |. . . . . . . .""".stripMargin)
+
+    board.hashCode() should be(board.value.hashCode())
+  }
+
 }

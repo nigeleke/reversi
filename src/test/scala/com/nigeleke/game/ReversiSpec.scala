@@ -65,7 +65,24 @@ class ReversiSpec extends WordSpec with MockitoSugar with Matchers {
       game.availableMoves should contain theSameElementsAs(Seq(Pass))
     }
 
-    "should allow a valid result to be made" in {
+    "should allow pass when no moves available" in {
+      val board = Board.from(
+        """O O O X . . . .
+          |O O X . . . . .
+          |O X . . . . . .
+          |X . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .
+          |. . . . . . . .""".stripMargin)
+      val game = Reversi(board, White)
+      val newGame = game.makeMove(Pass)
+      newGame.currentPlayer should be(Black)
+      newGame.board should be(board)
+      newGame.availableMoves.size should be(7)
+    }
+
+    "should allow a valid move to be played" in {
       val game = Reversi()
 
       val gameAfterMove = game.makeMove(Square(2,4))

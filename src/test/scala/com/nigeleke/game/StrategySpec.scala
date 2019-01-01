@@ -1,6 +1,6 @@
 package com.nigeleke.game
 
-import com.nigeleke.game.strategy.{GameLike, MiniMax, MiniMaxWithAlphaBetaPruning, RandomMoveStrategy}
+import com.nigeleke.game.strategy.{GameLike, MiniMax, MiniMaxWithAlphaBetaPruning, RandomStrategy}
 import com.typesafe.config.{Config, ConfigFactory, ConfigValue}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -77,7 +77,7 @@ class StrategySpec extends WordSpec with Matchers {
 
     val game = TestGame(availableMoves)
 
-    val strategy = new RandomMoveStrategy {
+    val strategy = new RandomStrategy {
       override type Game = TestGame
     }
 

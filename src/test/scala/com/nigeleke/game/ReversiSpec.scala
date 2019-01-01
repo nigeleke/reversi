@@ -1,7 +1,7 @@
 package com.nigeleke.game
 
 import com.nigeleke.game.reversi._
-import com.nigeleke.game.strategy.{MiniMax, RandomMoveStrategy}
+import com.nigeleke.game.strategy.{MiniMax, RandomStrategy}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{Matchers, WordSpec}
 
@@ -211,7 +211,7 @@ class ReversiSpec extends WordSpec with Matchers {
     "should be able to define strategies for both players" in {
       val defaultConfig = ConfigFactory.load()
       val miniMaxStrategy = new ReversiStrategy with MiniMax { val config = defaultConfig }
-      val randomMoveStrategy = new ReversiStrategy with RandomMoveStrategy {}
+      val randomMoveStrategy = new ReversiStrategy with RandomStrategy {}
       val game = Reversi().withStrategy(Black, miniMaxStrategy).withStrategy(White, randomMoveStrategy)
       game.strategy(Black) should be(miniMaxStrategy)
       game.strategy(White) should be(randomMoveStrategy)

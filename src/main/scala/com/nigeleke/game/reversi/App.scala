@@ -1,36 +1,44 @@
 package com.nigeleke.game.reversi
 
-import com.nigeleke.game.strategy.{MiniMax, MiniMaxWithAlphaBetaPruning, RandomMoveStrategy}
-import com.typesafe.config.ConfigFactory
+import java.io._
+
+import com.nigeleke.game.strategy.{MiniMax, MiniMaxWithAlphaBetaPruning, RandomStrategy}
+import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.annotation.tailrec
 
-object App {
+class App(implicit defaultConfig: Config, in: InputStream, out: OutputStream) {
 
-  def main(args: Array[String]) : Unit = {
-    val defaultConfig = ConfigFactory.load()
+  lazy val reader = new BufferedReader(new InputStreamReader(in))
+  lazy val writer = new PrintWriter(out)
 
+  lazy val strategy = Map(
+    "random" -> new ReversiStrategy with RandomStrategy {},
+    "miniMax" -> new ReversiStrategy with MiniMax { val config = defaultConfig },
+    "miniMaxWithAlphaBetaPruning" -> new ReversiStrategy with MiniMaxWithAlphaBetaPruning { val config = defaultConfig },
+    "manual" -> ManualStrategy(in, out))
+
+  lazy val blackStrategy = strategy(defaultConfig.getString("com.nigeleke.game.reversi.blackStrategy"))
+  lazy val whiteStrategy = strategy(defaultConfig.getString("com.nigeleke.game.reversi.whiteStrategy"))
+
+  def run() = {
     val start = System.nanoTime()
 
-    lazy val randomMoveStrategy = new ReversiStrategy with RandomMoveStrategy {}
-    lazy val miniMaxStrategy = new ReversiStrategy with MiniMax { val config = defaultConfig }
-    lazy val miniMaxWithAlphaBetaPruning = new ReversiStrategy with MiniMaxWithAlphaBetaPruning { val config = defaultConfig }
-    lazy val manualStrategy = ManualStrategy(System.in, System.out)
+    val initialGame = Reversi()
+      .withStrategy(Black, blackStrategy)
+      .withStrategy(White, whiteStrategy)
 
-    val game = Reversi()
-      .withStrategy(Black, miniMaxWithAlphaBetaPruning)
-      .withStrategy(White, manualStrategy)
-
-    val endGame = play(game)
+    val endGame = play(initialGame)
 
     val end = System.nanoTime()
 
-    println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} in ${(end-start)/1000000000}s")
+    writer.println(s"Result: Black ${endGame.board.counters(Black)} White ${endGame.board.counters(White)} in ${(end-start)/1000000000}s")
+    writer.flush()
   }
 
   @tailrec
   private def play(game: Reversi) : Reversi = {
-    println(game.board.toPrettyString)
+    writer.println(game.board.toPrettyString)
     if (game.isFinished) game
     else {
       val strategy = game.strategy(game.currentPlayer)
@@ -38,6 +46,18 @@ object App {
       val newGame = game.makeMove(move)
       play(newGame)
     }
+  }
+
+}
+
+object App {
+
+  def main(args: Array[String]) : Unit = {
+    implicit val defaultConfig = ConfigFactory.load()
+    implicit val inputStream = System.in
+    implicit val outputStream = System.out
+    val app = new App()
+    app.run()
   }
 
 }

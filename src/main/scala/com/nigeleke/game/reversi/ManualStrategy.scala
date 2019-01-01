@@ -2,8 +2,6 @@ package com.nigeleke.game.reversi
 
 import java.io._
 
-import com.nigeleke.game.strategy.Strategy
-
 case class ManualStrategy(in: InputStream, out: OutputStream) extends ReversiStrategy {
 
   lazy val reader = new BufferedReader(new InputStreamReader(in))
